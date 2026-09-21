@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Automated Vulnerability Scanner</title>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <!-- ================= LOGIN / REGISTER ================= -->
+
+    <div id="authPage" class="auth-container">
+
+        <div class="auth-box">
+
+            <div class="logo">
+                🛡️
+            </div>
+
+            <h1>Vulnerability Scanner</h1>
+
+            <p class="subtitle">
+                Automated Web Application Security Scanner
+            </p>
+
+            <!-- LOGIN -->
+
+            <div id="loginForm">
+
+                <h2>Welcome Back</h2>
+
+                <div class="input-group">
+                    <label>Email</label>
+                    <input
+                        type="email"
+                        id="loginEmail"
+                        placeholder="Enter your email"
+                    >
+                </div>
+
+                <div class="input-group">
+                    <label>Password</label>
+                    <input
+                        type="password"
+                        id="loginPassword"
+                        placeholder="Enter your password"
+                    >
+                </div>
+
+                <button class="primary-btn" onclick="login()">
+                    LOGIN
+                </button>
+
+                <p class="switch-text">
+                    Don't have an account?
+                    <span onclick="showRegister()">Register</span>
+                </p>
+
+            </div>
+
+
+            <!-- REGISTER -->
+
+            <div id="registerForm" class="hidden">
+
+                <h2>Create Account</h2>
+
+                <div class="input-group">
+                    <label>Full Name</label>
+                    <input
+                        type="text"
+                        id="registerName"
+                        placeholder="Enter your name"
+                    >
+                </div>
+
+                <div class="input-group">
+                    <label>Email</label>
+                    <input
+                        type="email"
+                        id="registerEmail"
+                        placeholder="Enter your email"
+                    >
+                </div>
+
+                <div class="input-group">
+                    <label>Password</label>
+                    <input
+                        type="password"
+                        id="registerPassword"
+                        placeholder="Create password"
+                    >
+                </div>
+
+                <div class="input-group">
+                    <label>Confirm Password</label>
+                    <input
+                        type="password"
+                        id="confirmPassword"
+                        placeholder="Confirm password"
+                    >
+                </div>
+
+                <button class="primary-btn" onclick="register()">
+                    CREATE ACCOUNT
+                </button>
+
+                <p class="switch-text">
+                    Already have an account?
+                    <span onclick="showLogin()">Login</span>
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= APPLICATION ================= -->
+
+    <div id="appPage" class="hidden">
+
+        <!-- NAVBAR -->
+
+        <header class="navbar">
+
+            <div class="brand">
+                🛡️
+                <span>Vulnerability Scanner</span>
+            </div>
+
+            <div class="nav-right">
+
+                <span id="usernameDisplay">
+                    User
+                </span>
+
+                <button onclick="logout()" class="logout-btn">
+                    Logout
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <!-- SIDEBAR -->
+
+        <aside class="sidebar">
+
+            <button onclick="showPage('dashboard')" class="menu-btn">
+                🏠 Dashboard
+            </button>
+
+            <button onclick="showPage('scanConfig')" class="menu-btn">
+                🔍 New Scan
+            </button>
+
+            <button onclick="showPage('results')" class="menu-btn">
+                ⚠️ Results
+            </button>
+
+            <button onclick="showPage('reports')" class="menu-btn">
+                📄 Reports
+            </button>
+
+        </aside>
+
+
+        <!-- MAIN CONTENT -->
+
+        <main class="main-content">
+
+
+            <!-- ================= DASHBOARD ================= -->
+
+            <section id="dashboard" class="page">
+
+                <div class="page-header">
+
+                    <div>
+                        <h1>Dashboard</h1>
+
+                        <p>
+                            Automated Web Application Security Scanner
+                        </p>
+                    </div>
+
+                    <button
+                        class="primary-btn small-btn"
+                        onclick="showPage('scanConfig')"
+                    >
+                        + New Scan
+                    </button>
+
+                </div>
+
+
+                <div class="target-box">
+
+                    <label>Target URL</label>
+
+                    <div class="target-input">
+
+                        <input
+                            type="url"
+                            id="dashboardTarget"
+                            placeholder="https://example.com"
+                        >
+
+                        <button
+                            class="scan-btn"
+                            onclick="startQuickScan()"
+                        >
+                            SCAN
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- STATISTICS -->
+
+                <div class="stats-grid">
+
+                    <div class="stat-card">
+
+                        <div class="stat-icon blue">
+                            🔎
+                        </div>
+
+                        <div>
+                            <h2 id="totalFindings">12</h2>
+                            <p>Total Findings</p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat-card critical-card">
+
+                        <div class="stat-icon red">
+                            ⚠
+                        </div>
+
+                        <div>
+                            <h2 id="criticalCount">1</h2>
+                            <p>Critical</p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat-card high-card">
+
+                        <div class="stat-icon orange">
+                            !
+                        </div>
+
+                        <div>
+                            <h2 id="highCount">3</h2>
+                            <p>High</p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat-card medium-card">
+
+                        <div class="stat-icon yellow">
+                            !
+                        </div>
+
+                        <div>
+                            <h2 id="mediumCount">5</h2>
+                            <p>Medium</p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- RECENT SCAN -->
+
+                <div class="content-card">
+
+                    <div class="card-header">
+
+                        <h2>Recent Scan</h2>
+
+                        <button
+                            class="text-btn"
+                            onclick="showPage('reports')"
+                        >
+                            View All
+                        </button>
+
+                    </div>
+
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Target</th>
+                                <th>Date</th>
+                                <th>Findings</th>
+                                <th>Status</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            <tr>
+                                <td>localhost:3000</td>
+                                <td>21-09-2026</td>
+                                <td>12</td>
+
+                                <td>
+                                    <span class="status completed">
+                                        Completed
+                                    </span>
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= SCAN CONFIGURATION ================= -->
+
+            <section id="scanConfig" class="page hidden">
+
+                <div class="page-header">
+
+                    <div>
+
+                        <h1>Scan Configuration</h1>
+
+                        <p>
+                            Select the security checks you want to perform.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="content-card config-card">
+
+                    <div class="input-group">
+
+                        <label>Target URL</label>
+
+                        <input
+                            type="url"
+                            id="targetUrl"
+                            placeholder="https://example.com"
+                        >
+
+                    </div>
+
+
+                    <h3>Scan Options</h3>
+
+
+                    <div class="check-grid">
+
+                        <label class="check-option">
+                            <input
+                                type="checkbox"
+                                value="SQL_INJECTION"
+                                checked
+                            >
+                            <span>SQL Injection</span>
+                        </label>
+
+
+                        <label class="check-option">
+                            <input
+                                type="checkbox"
+                                value="XSS"
+                                checked
+                            >
+                            <span>Cross-Site Scripting</span>
+                        </label>
+
+
+                        <label class="check-option">
+                            <input
+                                type="checkbox"
+                                value="CSRF"
+                                checked
+                            >
+                            <span>CSRF</span>
+                        </label>
+
+
+                        <label class="check-option">
+                            <input
+                                type="checkbox"
+                                value="SECURITY_HEADERS"
+                                checked
+                            >
+                            <span>Security Headers</span>
+                        </label>
+
+
+                        <label class="check-option">
+                            <input
+                                type="checkbox"
+                                value="AUTHENTICATION"
+                            >
+                            <span>Authentication</span>
+                        </label>
+
+
+                        <label class="check-option">
+                            <input
+                                type="checkbox"
+                                value="AUTHORIZATION"
+                            >
+                            <span>Authorization</span>
+                        </label>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label>Scan Depth</label>
+
+                        <select id="scanDepth">
+
+                            <option value="3">
+                                Low
+                            </option>
+
+                            <option value="5" selected>
+                                Medium
+                            </option>
+
+                            <option value="10">
+                                High
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <button
+                        class="primary-btn start-btn"
+                        onclick="startScan()"
+                    >
+                        🚀 START SCAN
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= SCAN PROGRESS ================= -->
+
+            <section id="scanProgress" class="page hidden">
+
+                <div class="progress-container">
+
+                    <div class="progress-icon">
+                        🛡️
+                    </div>
+
+                    <h1>SCAN IN PROGRESS</h1>
+
+                    <p id="scanningTarget">
+                        Target: http://localhost:3000
+                    </p>
+
+
+                    <div class="progress-box">
+
+                        <div class="scan-step" id="step1">
+                            <span>Target Validation</span>
+                            <b>Waiting...</b>
+                        </div>
+
+                        <div class="scan-step" id="step2">
+                            <span>Web Crawling</span>
+                            <b>Waiting...</b>
+                        </div>
+
+                        <div class="scan-step" id="step3">
+                            <span>Endpoint Discovery</span>
+                            <b>Waiting...</b>
+                        </div>
+
+                        <div class="scan-step" id="step4">
+                            <span>Parameter Analysis</span>
+                            <b>Waiting...</b>
+                        </div>
+
+                        <div class="scan-step" id="step5">
+                            <span>SQL Injection</span>
+                            <b>Waiting...</b>
+                        </div>
+
+                        <div class="scan-step" id="step6">
+                            <span>XSS Detection</span>
+                            <b>Waiting...</b>
+                        </div>
+
+                        <div class="scan-step" id="step7">
+                            <span>Risk Analysis</span>
+                            <b>Waiting...</b>
+                        </div>
+
+                        <div class="scan-step" id="step8">
+                            <span>Report Generation</span>
+                            <b>Waiting...</b>
+                        </div>
+
+                    </div>
+
+
+                    <div class="overall-progress">
+
+                        <div class="progress-label">
+
+                            <span>Overall Progress</span>
+
+                            <span id="progressPercent">
+                                0%
+                            </span>
+
+                        </div>
+
+                        <div class="progress-bar">
+
+                            <div
+                                id="progressFill"
+                                class="progress-fill"
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+
+                    <p id="scanMessage">
+                        Initializing scanner...
+                    </p>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= RESULTS ================= -->
+
+            <section id="results" class="page hidden">
+
+                <div class="page-header">
+
+                    <div>
+
+                        <h1>Scan Results</h1>
+
+                        <p>
+                            Target:
+                            <strong id="resultTarget">
+                                http://localhost:3000
+                            </strong>
+                        </p>
+
+                    </div>
+
+                    <button
+                        class="primary-btn"
+                        onclick="downloadReport()"
+                    >
+                        ⬇ Download Report
+                    </button>
+
+                </div>
+
+
+                <div class="result-summary">
+
+                    <div>
+                        <strong>12</strong>
+                        <span>Total Findings</span>
+                    </div>
+
+                    <div class="critical">
+                        <strong>1</strong>
+                        <span>Critical</span>
+                    </div>
+
+                    <div class="high">
+                        <strong>3</strong>
+                        <span>High</span>
+                    </div>
+
+                    <div class="medium">
+                        <strong>5</strong>
+                        <span>Medium</span>
+                    </div>
+
+                    <div class="low">
+                        <strong>3</strong>
+                        <span>Low</span>
+                    </div>
+
+                </div>
+
+
+                <div class="content-card">
+
+                    <h2>Vulnerabilities</h2>
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Vulnerability</th>
+                                <th>Severity</th>
+                                <th>Endpoint</th>
+                                <th>Status</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            <tr onclick="showVulnerability('sql')">
+
+                                <td>SQL Injection</td>
+
+                                <td>
+                                    <span class="severity critical">
+                                        Critical
+                                    </span>
+                                </td>
+
+                                <td>/login</td>
+
+                                <td>Confirmed</td>
+
+                            </tr>
+
+
+                            <tr onclick="showVulnerability('xss')">
+
+                                <td>Cross-Site Scripting</td>
+
+                                <td>
+                                    <span class="severity high">
+                                        High
+                                    </span>
+                                </td>
+
+                                <td>/search</td>
+
+                                <td>Confirmed</td>
+
+                            </tr>
+
+
+                            <tr onclick="showVulnerability('csrf')">
+
+                                <td>CSRF</td>
+
+                                <td>
+                                    <span class="severity medium">
+                                        Medium
+                                    </span>
+                                </td>
+
+                                <td>/profile</td>
+
+                                <td>Confirmed</td>
+
+                            </tr>
+
+
+                            <tr onclick="showVulnerability('header')">
+
+                                <td>Missing Security Header</td>
+
+                                <td>
+                                    <span class="severity low">
+                                        Low
+                                    </span>
+                                </td>
+
+                                <td>/api</td>
+
+                                <td>Confirmed</td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= VULNERABILITY DETAILS ================= -->
+
+            <section id="vulnerabilityDetails" class="page hidden">
+
+                <button
+                    class="back-btn"
+                    onclick="showPage('results')"
+                >
+                    ← Back to Results
+                </button>
+
+
+                <div class="details-card">
+
+                    <div class="details-title">
+
+                        <div>
+                            <span id="detailIcon">
+                                ⚠️
+                            </span>
+
+                            <h1 id="detailTitle">
+                                SQL INJECTION
+                            </h1>
+                        </div>
+
+                        <span
+                            id="detailSeverity"
+                            class="severity critical"
+                        >
+                            CRITICAL
+                        </span>
+
+                    </div>
+
+
+                    <div class="detail-grid">
+
+                        <div>
+                            <label>CVSS</label>
+                            <strong id="detailCvss">
+                                9.8
+                            </strong>
+                        </div>
+
+                        <div>
+                            <label>Endpoint</label>
+                            <strong id="detailEndpoint">
+                                /login
+                            </strong>
+                        </div>
+
+                        <div>
+                            <label>Parameter</label>
+                            <strong id="detailParameter">
+                                username
+                            </strong>
+                        </div>
+
+                    </div>
+
+
+                    <div class="detail-section">
+
+                        <h3>Evidence</h3>
+
+                        <p id="detailEvidence">
+                            Suspicious database response detected.
+                        </p>
+
+                    </div>
+
+
+                    <div class="detail-section">
+
+                        <h3>Impact</h3>
+
+                        <p id="detailImpact">
+                            Potential unauthorized database access.
+                        </p>
+
+                    </div>
+
+
+                    <div class="detail-section">
+
+                        <h3>Remediation</h3>
+
+                        <ul id="detailRemediation">
+
+                            <li>
+                                Use parameterized queries
+                            </li>
+
+                            <li>
+                                Validate user input
+                            </li>
+
+                            <li>
+                                Avoid dynamic SQL queries
+                            </li>
+
+                        </ul>
+
+                    </div>
+
+
+                    <div class="details-actions">
+
+                        <button
+                            class="secondary-btn"
+                            onclick="showPage('results')"
+                        >
+                            ← BACK
+                        </button>
+
+                        <button
+                            class="primary-btn"
+                            onclick="downloadReport()"
+                        >
+                            ⬇ DOWNLOAD REPORT
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= REPORTS ================= -->
+
+            <section id="reports" class="page hidden">
+
+                <div class="page-header">
+
+                    <div>
+
+                        <h1>Scan History</h1>
+
+                        <p>
+                            View your previous vulnerability scans.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="content-card">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>Target</th>
+
+                                <th>Date</th>
+
+                                <th>Findings</th>
+
+                                <th>Status</th>
+
+                                <th>Action</th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            <tr>
+
+                                <td>localhost:3000</td>
+
+                                <td>21-09-2026</td>
+
+                                <td>12</td>
+
+                                <td>
+                                    <span class="status completed">
+                                        Completed
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <button
+                                        class="table-btn"
+                                        onclick="showPage('results')"
+                                    >
+                                        View Report
+                                    </button>
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <td>localhost:3000</td>
+
+                                <td>20-09-2026</td>
+
+                                <td>15</td>
+
+                                <td>
+                                    <span class="status completed">
+                                        Completed
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <button
+                                        class="table-btn"
+                                        onclick="showPage('results')"
+                                    >
+                                        View Report
+                                    </button>
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <td>test-app</td>
+
+                                <td>19-09-2026</td>
+
+                                <td>8</td>
+
+                                <td>
+                                    <span class="status completed">
+                                        Completed
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <button
+                                        class="table-btn"
+                                        onclick="showPage('results')"
+                                    >
+                                        View Report
+                                    </button>
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+
+    <script src="script.js"></script>
+
+</body>
+</html>
